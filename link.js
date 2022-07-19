@@ -180,3 +180,106 @@ function isPalindrome(head) {
     // 返回是否回文结果
     return res
 }
+
+/** 荷兰国旗问题(链表)(额外空间O(N)) */
+function listPartition(head) {
+    const arr = new Array()
+    while (head) {
+        arr.push(head.value)
+        head = head.next
+    }
+    // 获得排序数组
+    mergeSort(arr, 0, arr.length - 1)
+    /** 将节点依次连接 */
+    const newHead = new Node(arr.shift())
+    let root = null
+    if (arr.length) {
+        root = new Node(arr.shift())
+        newHead.next = root
+        while (arr.length) {
+            root.next = new Node(arr.shift())
+            root = root.next
+        }
+    }
+    return newHead
+}
+function mergeSort(arr, L, R) {
+    if (L >= R || !arr || arr.length < 2) return
+    const M = L + ((R - L) >> 1)
+    mergeSort(arr, L, M)
+    mergeSort(arr, M + 1, R)
+    merge(arr, L, M, R)
+}
+function merge(arr, L, M, R) {
+    let p1 = L, p2 = M + 1, i = 0
+    const help = new Array(R - L + 1)
+    while (p1 <= M && p2 <= R) {
+        help[i++] = arr[p1] <= arr[p2] ? arr[p1++] : arr[p2++]
+    }
+    while (p1 <= M) {
+        help[i++] = arr[p1++]
+    }
+    while (p2 <= R) {
+        help[i++] = arr[p2++]
+    }
+    for (i = 0; i < help.length; i++) {
+        arr[L + i] = help[i]
+    }
+}
+/**  荷兰国旗问题(链表)(额外空间O(1)) */
+function listPartition(head, value) {
+    // 小于、等于、大于区域的头尾指针,以及一个保存下一个节点的节点
+    let sh = null, st = null, eh = null, et = null, bh = null, bt = null, next = null
+    while (head) {
+        next = head.next
+        head.next = null
+        /** 
+         * 根据比较结果往对应的头尾指针插值
+         * 第一次添加，头尾指针为同一个
+         * 第二次添加，原尾指针指向当前节点，尾指针移动到当前节点
+         */
+        if (head.value < value) {
+            if (!sh) {
+                sh = head
+                st = head
+            } else {
+                st.next = head
+                st = head
+            }
+        } else if (head.value === value) {
+            if (!eh) {
+                eh = head
+                et = head
+            } else {
+                et.next = head
+                et = head
+            }
+        } else {
+            if (!bh) {
+                bh = head
+                bt = head
+            } else {
+                bt.next = head
+                bt = head
+            }
+        }
+        head = next
+    }
+    /**
+     * 两个if处理有无小于区，有无等于区，有无大于区的情况
+     */
+    // 存在小于区
+    if (st) {
+        // 小于区尾指针指向等于区头指针
+        st.next = eh
+        // 处理等于区尾指针
+        et = et ? et : st
+    }
+    // 存在等于区
+    if (et) {
+        // 等于区尾指针指向大于区头指针
+        et.next = bh
+    }
+    // 返回头指针
+    return sh ? sh : eh ? eh : bh
+}
