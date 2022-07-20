@@ -337,3 +337,69 @@ function copyListWithRan(head) {
     }
     return res
 }
+
+/**
+ * 两个单链表相交问题(额外空间O(1),时间O(N))
+ * 1.两个单链表都是无环单链表
+ *  a.两个单链表尾指针不是同一引用，不相交
+ *  b.两个单链表尾指针同一个，相交。实现思路：得到两个链表长度差，长链表先走插值步，然后长短链表同时走，一定有相交节点
+ * 2.两个单链表都是有环单链表
+ */
+/** 获取两个无环链表第一个相交节点 */
+function noLoop(head1, head2) {
+    // 参数初始判断
+    if (!head1 || !head2) return null
+    let n = 0, cur1 = head1, cur2 = head2
+    // 巧妙运用一个变量n得到长度差
+    while (cur1) {
+        n++
+        cur1 = cur1.next
+    }
+    while (cur2) {
+        n--
+        cur2 = cur2.next
+    }
+    // 不是同一尾指针，返回null
+    if (cur1 !== cur2) return null
+    // 得到长链表
+    cur1 = n > 0 ? head1 : head2
+    // 得到短链表
+    cur2 = cur1 === head1 ? head2 : head1
+    n = Math.abs(n)
+    // 长链表先走n步
+    while (n !== 0) {
+        n--
+        cur1 = cur1.next
+    }
+    // 长短链表一起走，一定相交
+    while (cur1 !== cur2) {
+        cur1 = cur1.next
+        cur2 = cur2.next
+    }
+    return cur1
+}
+
+/** 获取链表第一个入环节点 */
+function getLoopNode(head) {
+    // 参数初始判断
+    if (!head || !head.next || !head.next.next) return null
+    // 慢指针一次走一步
+    let n1 = head.next
+    // 快指针一次走两步
+    let n2 = head.next.next
+    // 只要有环，一定能相遇，且在环内不会超过两圈
+    while (n1 !== n2) {
+        // 判断是否有环，无环则返回null
+        if (!n2.next || !n2.next.next) return null
+        n1 = n1.next
+        n2 = n2.next.next
+    }
+    // 快指针回到头节点
+    n2 = head
+    // 快慢指针同时一次走一步，一定会在第一个入环节点相遇
+    while (n1 !== n2) {
+        n1 = n1.next
+        n2 = n2.next
+    }
+    return n1
+}
