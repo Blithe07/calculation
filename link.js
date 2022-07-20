@@ -283,3 +283,57 @@ function listPartition(head, value) {
     // 返回头指针
     return sh ? sh : eh ? eh : bh
 }
+
+/** 复制链表(额外空间O(N)) */
+function copyListWithRan(head) {
+    let cur = head
+    const map = new Map()
+    // 建立map(老，新)
+    while (cur) {
+        map.set(cur, new Node(cur.value))
+        cur = cur.next
+    }
+    cur = head
+    // 设置新节点指向
+    while (cur) {
+        map.get(cur).next = map.get(cur.next)
+        map.get(cur).rand = map.get(cur.rand)
+        cur = cur.next
+    }
+    // 返回新节点的头
+    return map.get(head)
+}
+/** 复制链表(额外空间O(1)) */
+function copyListWithRan(head) {
+    if (!head) return null
+    let cur = head
+    // 定义存放原链表next值的变量
+    let next
+    /** 将1->2->3 变成 1->1'->2->2'->3->3' */
+    while (cur) {
+        next = cur.next
+        cur.next = new Node(cur.value)
+        cur.next.next = next
+        cur = next
+    }
+    cur = head
+    let curCopy
+    /** 设置复制节点的rand指针 */
+    while (cur) {
+        next = cur.next.next
+        curCopy = cur.next
+        curCopy.rand = cur.rand ? cur.rand.next : null
+        cur = next
+    }
+    res = head.next
+    cur = head
+    /** 将原链表拆离出来，并设置next指向 */
+    while (cur) {
+        next = cur.next.next
+        curCopy = cur.next
+        cur.next = next
+        curCopy.next = next ? next.next : null
+        cur = cur.next
+    }
+    return res
+}
