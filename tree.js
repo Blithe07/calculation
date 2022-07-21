@@ -95,7 +95,51 @@ function posOrderUnRecur(head) {
     }
 }
 
+/** 获取树的宽度 */
+function getTreeWidth(head) {
+    if (!head) return 0
+    // 定义队列
+    const queue = new Array()
+    queue.push(head)
+    // 定义map记录节点与层数之间的关系
+    const curLevelMap = new Map()
+    curLevelMap.set(head, 1)
+    // 当前层
+    let curLevel = 1
+    // 当前层节点数
+    let curLevelNodes = 0
+    // 宽度
+    let max = 0
+    // 先进先出即可实现宽度优先遍历
+    while (queue.length) {
+        head = queue.shift()
+        // 查看当前属于第几层
+        const curNodeLevel = curLevelMap.get(head)
+        if (curNodeLevel === curLevel) {
+            // 如果属于同一层，当前层数数量+1
+            curLevelNodes++
+        } else {
+            // 不是同一层，计算出最大值，并且当前层数和当前层节点数变化
+            max = Math.max(max, curLevelNodes)
+            curLevel++
+            curLevelNodes = 0
+        }
+        if (head.left) {
+            // 记录左孩子所在的层数
+            curLevelMap.set(head.left, curNodeLevel + 1)
+            queue.push(head.left)
+        }
+        if (head.right) {
+            // 记录右孩子所在的层数
+            curLevelMap.set(head.right, curNodeLevel + 1)
+            queue.push(head.right)
+        }
+    }
+    return max
+}
+
 // 给出两种遍历方式（必须包含中序才能确定根节点位置，以及左右子树）还原二叉树(思路：递归)
+/** 前中序树，得到整棵树 */
 function f1(qian, zhong) {
     if (qian == null || zhong == null || qian.length == 0 || zhong.length == 0 || qian.length !== zhong.length) return undefined
     var root = newNode(qian[0])
@@ -108,7 +152,7 @@ function f1(qian, zhong) {
     root.right = f1(rightQian, rightZhong)
     return root
 }
-
+/** 中后序树，得到整棵树 */
 function f2(zhong, hou) {
     if (zhong == null || hou == null || zhong.length == 0 || hou.length == 0 || zhong.length !== hou.length) return undefined
     var root = new Node(hou[hou.length - 1])
@@ -122,7 +166,7 @@ function f2(zhong, hou) {
     return root
 }
 
-// 深度优先遍历
+// 深度优先搜索
 function deepSearch(root, target) {
     if (root == null) return false
     if (root.value == target) return true
@@ -416,6 +460,7 @@ function changeTreeToBalance(root) {
     }
 }
 
+/** 图结构 */
 function Node(value) {
     this.value = value
     this.childs = []
