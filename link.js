@@ -437,7 +437,6 @@ function noLoop(head1, head2) {
     }
     return cur1
 }
-
 /** 获取链表第一个入环节点 */
 function getLoopNode(head) {
     // 参数初始判断

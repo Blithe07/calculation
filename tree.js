@@ -4,6 +4,97 @@ function Node(value) {
     this.left = null
     this.right = null
 }
+/** 
+ * 递归序：
+ *  每个节点都会有三次到达自己的时候。
+ *      先序遍历则是第一次遇到时就进行打印或者其它处理
+ *      中序遍历则是第二次遇到时就进行打印或者其它处理
+ *      后序遍历则是第三次遇到时就进行打印或者其它处理
+*/
+/** 递归形式遍历二叉树 */
+/** 先序遍历二叉树 */
+function preOrderRecur(head) {
+    if (!head) return
+    console.log(head.value);
+    preOrderRecur(head.left)
+    preOrderRecur(head.right)
+}
+/** 中序遍历二叉树 */
+function inOrderRecur(head) {
+    if (!head) return
+    inOrderRecur(head.left)
+    console.log(head.value);
+    inOrderRecur(head.right)
+}
+/** 后序遍历二叉树 */
+function posOrderRecur(head) {
+    if (!head) return
+    posOrderRecur(head.left)
+    posOrderRecur(head.right)
+    console.log(head.value);
+}
+
+/** 非递归行为遍历二叉树 */
+/** 先序遍历二叉树 */
+function preOrderUnReCur(head) {
+    if (!head) return
+    const stack = new Array()
+    // 压入头节点
+    stack.push(head)
+    // 栈不为空，弹出节点，并进行打印或者其它处理，先压右节点进栈，再压左节点进栈
+    while (stack.length) {
+        head = stack.pop()
+        console.log(head.value)
+        if (head.right) {
+            stack.push(head.right)
+        }
+        if (head.left) {
+            stack.push(head.left)
+        }
+    }
+}
+/** 中序遍历二叉树 */
+function inOrderUnRecur(head) {
+    if (!head) return
+    const stack = new Array()
+    // 每颗子树左边界进栈，左边界为空后弹出并打印，然后如果有右树，对其右树周而复始
+    while (head || stack.length) {
+        if (head) {
+            stack.push(head)
+            head = head.next
+        } else {
+            head = stack.pop()
+            console.log(head.value)
+            head = head.right
+        }
+    }
+
+}
+/** 后序遍历二叉树 */
+function posOrderUnRecur(head) {
+    if (!head) return
+    // 弹出栈
+    const stack1 = new Array()
+    // 收集栈(最后用于弹出数据实现后序遍历)
+    const stack2 = new Array()
+    stack1.push(head)
+    // 弹出栈不为空,弹出的节点压入收集栈，先压左节点进栈，再压右节点进栈
+    while (stack1.length) {
+        head = stack1.pop()
+        stack2.push(head)
+        if (head.left) {
+            stack1.push(head.left)
+        }
+        if (head.right) {
+            stack1.push(head.right)
+        }
+    }
+    // 得到右左根顺序的栈，依次弹出即可
+    while (stack2.length) {
+        console.log(stack2.pop().value)
+    }
+}
+
 // 给出两种遍历方式（必须包含中序才能确定根节点位置，以及左右子树）还原二叉树(思路：递归)
 function f1(qian, zhong) {
     if (qian == null || zhong == null || qian.length == 0 || zhong.length == 0 || qian.length !== zhong.length) return undefined
