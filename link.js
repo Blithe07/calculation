@@ -344,7 +344,66 @@ function copyListWithRan(head) {
  *  a.两个单链表尾指针不是同一引用，不相交
  *  b.两个单链表尾指针同一个，相交。实现思路：得到两个链表长度差，长链表先走插值步，然后长短链表同时走，一定有相交节点
  * 2.两个单链表都是有环单链表
+ *  a.两个有环单链表不相交
+ *  b.两个有环单链表在入环节点之前相交
+ *  c.两个有环单链表在环内相交
  */
+function getIntersectNode(head1, head2) {
+    if (!head1 || !head2) return null
+    const loop1 = getLoopNode(head1)
+    const loop2 = getLoopNode(head2)
+    // 都是有环链表
+    if (loop1 && loop2) {
+        return bothLoop(head1, loop1, head2, loop2)
+    }
+    // 都是无环链表
+    if (!loop1 && !loop2) {
+        return noLoop(head1, head2)
+    }
+    // 一个有环一个无环这种相交结构不存在
+    return null
+}
+/** 获取两个有环链表第一个相交节点 */
+function bothLoop(head1, loop1, head2, loop2) {
+    let cur1, cur2
+    // 2.b情况,与noLoop类似，不过停止节点为入环节点
+    if (loop1 === loop2) {
+        cur1 = head1;
+        cur2 = head2
+        let n = 0
+        while (cur1 !== loop1) {
+            n++
+            cur1 = cur1.next
+        }
+        while (cur2 !== loop2) {
+            n--
+            cur2 = cur2.next
+        }
+        cur1 = n > 0 ? head1 : head2
+        cur2 = cur1 === head1 ? head2 : head1
+        n = Math.abs(n)
+        while (n !== 0) {
+            n--
+            cur1 = cur1.next
+        }
+        while (cur1 !== cur2) {
+            cur1 = cur1.next
+            cur2 = cur2.next
+        }
+        return cur1
+    } else {
+        // cur1设置为入环节点下一个
+        cur1 = loop1.next
+        // 走完一圈，判断是否遇到loop2，遇到则相交，否则不相交
+        while (cur1 !== loop1) {
+            if (cur1 === loop2) {
+                return loop1
+            }
+            cur1 = cur1.next
+        }
+        return null
+    }
+}
 /** 获取两个无环链表第一个相交节点 */
 function noLoop(head1, head2) {
     // 参数初始判断
