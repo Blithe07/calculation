@@ -95,7 +95,7 @@ function posOrderUnRecur(head) {
     }
 }
 
-/** 获取树的宽度 */
+/** 获取树的宽度(使用map) */
 function getTreeWidth(head) {
     if (!head) return 0
     // 定义队列
@@ -137,10 +137,168 @@ function getTreeWidth(head) {
     }
     return max
 }
+/** 获取树的宽度(使用队列) */
+function getTreeWidth(head) {
+    if (!head) return 0
+    // curEnd: 当前层最后一个节点
+    // nextEnd: 下一层最后一个节点
+    let curEnd = head, nextEnd = null, curLevelNodes = 0, max = 0
+    const queue = new Array()
+    queue.push(head)
+    while (queue.length) {
+        head = queue.shift()
+        // 下一层节点入队列时，记录最新nextEnd
+        if (head.left) {
+            queue.push(head.left)
+            nextEnd = head.left
+        }
+        if (head.right) {
+            queue.push(head.right)
+            nextEnd = head.right
+        }
+        // 当前层节点数+1
+        curLevelNodes++
+        // 如果到了当前层最后一个节点，清算最大值，将当前最后一个节点设为下一层最后一个节点，下一层最后一个节点清空
+        if (curEnd === head) {
+            max = Math.max(max, curLevelNodes)
+            curLevelNodes = 0
+            curEnd = nextEnd
+            nextEnd = null
+        }
+    }
+    return max
+}
+
+// 系统数字最小值
+let prevValue = Number.MIN_VALUE
+/** 判断是否为搜索二叉树(左子树节点值<子树节点值<右数节点值) */
+function isSearchTree(root) {
+    if (!root) return true
+    // 判断左树是否为搜索二叉树
+    const isLeftSearchTree = isSearchTree(root.left)
+    // 如果左树不是直接返回false
+    if (!isLeftSearchTree) return false
+    if (head.value < prevValue) {
+        return false
+    } else {
+        prevValue = head.value
+    }
+    // 判断右树是否为搜索二叉树
+    const isRightSearchTree = isSearchTree(root.right)
+    return isRightSearchTree
+}
+/** 判断是否为搜索二叉树 */
+/**
+ * 1.向自己左右子树要三个信息，是否为搜索二叉树,最大值,最小值
+ * 2.根据左右子树得到该节点信息
+ */
+function isSearchTree(head) {
+    return searchTreeInfo(head).isBST
+}
+/** 定义返回信息 */
+class ReturnSearchInfo {
+    constructor(isBST, min, max) {
+        this.isBST = isBST
+        this.min = min
+        this.max = max
+    }
+}
+function searchTreeInfo(head) {
+    if (!head) {
+        return null
+    }
+    // 左树信息
+    const leftData = searchTreeInfo(head.left)
+    // 右树信息
+    const rightData = searchTreeInfo(head.right)
+    // 加工出该树信息
+    let isBST = true, min = head.value, max = head.value
+    if (leftData) {
+        min = Math.min(leftData.min, min)
+        max = Math.min(leftData.max, max)
+        isBST = leftData.isBST && leftData.max >= head.value
+    }
+    if (rightData) {
+        min = Math.min(rightData.min, min)
+        max = Math.min(rightData.max, max)
+        isBST = rightData.isBST && rightData.min <= head.value
+    }
+    return new ReturnSearchInfo(isBST, min, max)
+}
+
+/** 判断是否为完全二叉树 */
+/** 
+ * 1.宽度优先遍历，当遍历到某个节点有右孩子却没有左孩子直接返回false
+ * 2.宽度优先遍历，当遍历到某个节点有左无右时，接下来遍历的节点都必须是叶子节点
+ */
+function isCompleteTree(head) {
+    if (!head) return true
+    const queue = new Array()
+    let leaf = false, l, r
+    queue.push(head)
+    while (queue.length) {
+        head = queue.pop()
+        l = head.left
+        r = head.right
+        if ((!l && r) || (leaf && (l || r))) {
+            return false
+        }
+        if (l) {
+            queue.push(l)
+        }
+        if (r) {
+            queue.push(r)
+        }
+        if (!l || !r) {
+            leaf = true
+        }
+    }
+}
+
+/** 判断是否为平衡二叉树(树形DP问题) */
+/**
+ * 1.向自己左右子树要两个信息，是否平衡,高度
+ * 2.根据左右子树得到该节点信息
+ */
+function isBalanceTree(head) {
+    return balanceTreeInfo(head).isBalanced
+}
+/** 定义返回信息 */
+class ReturnBalanceInfo {
+    constructor(isBalanced, height) {
+        this.isBalance = isBalanced;
+        this.height = height;
+    }
+}
+function balanceTreeInfo(head) {
+    // base case
+    if (!head) {
+        return new ReturnBalanceInfo(true, 0)
+    }
+    // 左树信息
+    const leftTree = balanceTreeInfo(head.left)
+    // 右树信息
+    const rightTree = balanceTreeInfo(head.right)
+    // 加工出该树高度
+    const height = Math.max(leftTree.height, rightTree.height) + 1
+    // 加工出该树是否平衡
+    const isBalanced = leftTree.isBalanced && rightTree.isBalanced && Math.abs(leftTree.height - rightTree.height) < 2
+    // 返回加工信息
+    return new ReturnBalanceInfo(isBalanced, height)
+}
+
+/** 判断是否为满二叉树 */
+/**
+ * 1.获取树的深度d，满二叉树的节点为2的d次方-1
+ * 2.向自己左右子树获取节点数量信息
+ */
+function isFullTree(head) {
+
+}
 
 // 给出两种遍历方式（必须包含中序才能确定根节点位置，以及左右子树）还原二叉树(思路：递归)
 /** 前中序树，得到整棵树 */
-function f1(qian, zhong) {
+function getRootTree(qian, zhong) {
     if (qian == null || zhong == null || qian.length == 0 || zhong.length == 0 || qian.length !== zhong.length) return undefined
     var root = newNode(qian[0])
     var rootIndex = zhong.indexOf(root.value)
@@ -153,7 +311,7 @@ function f1(qian, zhong) {
     return root
 }
 /** 中后序树，得到整棵树 */
-function f2(zhong, hou) {
+function getRootTree(zhong, hou) {
     if (zhong == null || hou == null || zhong.length == 0 || hou.length == 0 || zhong.length !== hou.length) return undefined
     var root = new Node(hou[hou.length - 1])
     var rootIndex = zhong.indexOf(root.value)
@@ -174,6 +332,7 @@ function deepSearch(root, target) {
     var right = deepSearch(root.right, target)
     return left || right
 }
+
 // 广度优先搜索
 function widthSearch(rootList, target) {
     if (rootList == null || rootList.length == 0) return false
@@ -188,6 +347,7 @@ function widthSearch(rootList, target) {
     }
     return widthSearch(childList, target);
 }
+
 // 二叉树比较（不允许换位）
 function compareTree(root1, root2) {
     if (root1 === root2) return true
@@ -205,6 +365,7 @@ function compareChangeTree(root1, root2) {
         compareChangeTree(root1.left, root2.right) ||
         compareChangeTree(roo1.right, root2.left)
 }
+
 // 二叉树diff
 function diffTree(root1, root2, diffList) {
     if (root1 == root2) return diffList
@@ -234,6 +395,7 @@ function diffTree(root1, root2, diffList) {
         diffTree(root1.right, root2.right, diffList);
     }
 }
+
 /**
  * 构建二叉搜索树
  * @param {*} arr 一维节点数组 
@@ -270,6 +432,7 @@ function addNode(root, nodeValue) {
         }
     }
 }
+
 /**
  * 二叉树中查询值是否存在
  * @param {*} root 根节点（树结构）
