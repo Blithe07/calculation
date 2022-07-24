@@ -289,12 +289,67 @@ function balanceTreeInfo(head) {
 
 /** 判断是否为满二叉树 */
 /**
- * 1.获取树的深度d，满二叉树的节点为2的d次方-1
- * 2.向自己左右子树获取节点数量信息
+ * 1.获取树的高度h，满二叉树的节点为(2的h次方)-1
+ * 2.向自己左右子树获取两个信息，节点数量信息,高度
  */
 function isFullTree(head) {
-
+    if (!head) return true
+    const data = fullTreeInfo(head)
+    return data.nodes === (data.height << 1) - 1
 }
+class ReturnFullInfo {
+    constructor(nodes, height) {
+        this.nodes = nodes
+        this.height = height
+    }
+}
+function fullTreeInfo(head) {
+    if (!head) return new ReturnFullInfo(0, 0)
+    const leftData = fullTreeInfo(head.left)
+    const rightData = fullTreeInfo(head.right)
+    const height = Math.max(leftData.height, rightData.height) + 1
+    const nodes = leftData.nodes + rightData.nodes + 1
+    return new ReturnFullInfo(nodes, height)
+}
+
+/**
+ *  两个节点最低公共祖先(默认两个节点都在一棵树上)
+ * @param {*} head 
+ * @param {*} o1 
+ * @param {*} o2 
+ */
+function lowestCommonAncestor(head, o1, o2) {
+    const fatherMap = new Map()
+    setNodeInFatherMap(head, fatherMap)
+    fatherMap.set(head, head)
+    const set = new Set()
+    let cur = o1
+    // o1往上遍历到头节点，并沿途添加上经过的节点
+    while (cur !== fatherMap.get(cur)) {
+        set.add(cur)
+        cur = fatherMap.get(cur)
+    }
+    // 添加上头节点
+    set1.add(head)
+    // o2往上遍历至头节点，并沿途查看是否存在set中，存在即返回
+    cur = o2
+    while (cur !== fatherMap.get(cur)) {
+        if (set.has(cur)) {
+            break
+        }
+        cur = fatherMap.get(cur)
+    }
+    return cur
+}
+/** 将所有节点的父节点与自己构建联系 */
+function setNodeInFatherMap(head, fatherMap) {
+    if (!head) return null
+    fatherMap.set(head.left, head)
+    fatherMap.set(head.right, head)
+    setNodeInFatherMap(head.left, fatherMap)
+    setNodeInFatherMap(head.right, fatherMap)
+}
+
 
 // 给出两种遍历方式（必须包含中序才能确定根节点位置，以及左右子树）还原二叉树(思路：递归)
 /** 前中序树，得到整棵树 */
