@@ -386,7 +386,7 @@ function getSuccessorNode(node) {
     // 空节点直接返回null
     if (!node) return node
     if (node.right) {
-        // 有右树
+        // 有右树，得到右子树的最左节点
         return getLeftMost(node.right)
     } else {
         // 无右树
@@ -396,7 +396,9 @@ function getSuccessorNode(node) {
             node = parent
             parent = node.parent
         }
-        // 找到父节点的左子树是自己，返回父节点
+        // 该return parent代表两种情况
+        //  1.找到父节点的左子树是自己，返回父节点
+        //  2.一直找不到父节点的左子树是自己，代表是右子树最右侧节点，返回null
         return parent
     }
 }
@@ -407,6 +409,34 @@ function getLeftMost(node) {
         node = node.left
     }
     return node
+}
+
+/** 二叉树-序列化(内存->硬盘)，采用先序 */
+function serialByPre(head) {
+    if (!head) {
+        return '#_'
+    }
+    let res = head.value + '_'
+    res += serialByPre(head.left)
+    res += serialByPre(head.right)
+    return res
+}
+/** 二叉树-反序列化(硬盘->内存) */
+function reconByPreString(preStr) {
+    const values = preStr.split('_')
+    const queue = new Array()
+    for (const value of values) {
+        queue.push(value)
+    }
+    return reconPreOrder(queue)
+}
+function reconPreOrder(queue) {
+    const value = queue.shift()
+    if (value === '#') return null
+    const head = new Node(value)
+    head.left = reconPreOrder(queue)
+    head.right = reconPreOrder(queue)
+    return head
 }
 
 // 给出两种遍历方式（必须包含中序才能确定根节点位置，以及左右子树）还原二叉树(思路：递归)
