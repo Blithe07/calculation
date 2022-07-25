@@ -313,7 +313,7 @@ function fullTreeInfo(head) {
 }
 
 /**
- *  两个节点最低公共祖先(默认两个节点都在一棵树上)
+ *  两个节点最低公共祖先(默认两个节点都在一棵树上)(额外空间O(N))
  * @param {*} head 
  * @param {*} o1 
  * @param {*} o2 
@@ -349,7 +349,18 @@ function setNodeInFatherMap(head, fatherMap) {
     setNodeInFatherMap(head.left, fatherMap)
     setNodeInFatherMap(head.right, fatherMap)
 }
-
+/** 两个节点最低公共祖先(默认两个节点都在一棵树上)(额外空间O(1)) */
+function lowestCommonAncestor(head, o1, o2) {
+    if (!head || head === o1 || head === o2) {
+        return head
+    }
+    const left = lowestCommonAncestor(head.left, o1, o2)
+    const right = lowestCommonAncestor(head.right, o1, o2)
+    if (left && right) {
+        return head
+    }
+    return left ? left : right
+}
 
 // 给出两种遍历方式（必须包含中序才能确定根节点位置，以及左右子树）还原二叉树(思路：递归)
 /** 前中序树，得到整棵树 */
