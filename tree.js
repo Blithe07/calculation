@@ -4,6 +4,7 @@ function Node(value) {
     this.left = null
     this.right = null
 }
+
 /** 
  * 递归序：
  *  每个节点都会有三次到达自己的时候。
@@ -350,7 +351,12 @@ function setNodeInFatherMap(head, fatherMap) {
     setNodeInFatherMap(head.right, fatherMap)
 }
 /** 两个节点最低公共祖先(默认两个节点都在一棵树上)(额外空间O(1)) */
+/**
+ * 1.o1是o2最低公共祖先或者o2是o1最低公共祖先
+ * 2.o1,o2不互为公共祖先，向上找最低公共祖先
+ */
 function lowestCommonAncestor(head, o1, o2) {
+    // base case
     if (!head || head === o1 || head === o2) {
         return head
     }
@@ -360,6 +366,47 @@ function lowestCommonAncestor(head, o1, o2) {
         return head
     }
     return left ? left : right
+}
+
+// 特殊节点(带parent指针)
+function pNode(value) {
+    this.value = value
+    this.left = null
+    this.right = null
+    this.parent = null
+}
+/** 后继节点(中序遍历中下一个节点) */
+/**
+ * 实现一：使用数组存储中序遍历结果，得到后继节点，额外空间复杂度O(N)
+ * 实现二：访问第K个节点的后继节点，使用指针信息得到后继节点，额外空间复杂度O(K)，优于实现一
+ *  1.如果有右子树，后继节点是右子树的最左节点
+ *  2.如果无右树，有左子树，后继节点是当前节点向上查询，查当前节点是否为父节点的左子树，如果是的话，返回该父节点；整个树最右节点的后继节点是null
+ */
+function getSuccessorNode(node) {
+    // 空节点直接返回null
+    if (!node) return node
+    if (node.right) {
+        // 有右树
+        return getLeftMost(node.right)
+    } else {
+        // 无右树
+        let parent = node.parent
+        // 存在父节点，并且父节点的左子树不是自己，则继续向上访问
+        while (parent && parent.left !== node) {
+            node = parent
+            parent = node.parent
+        }
+        // 找到父节点的左子树是自己，返回父节点
+        return parent
+    }
+}
+/** 返回右子树最左侧节点 */
+function getLeftMost(node) {
+    if (!node) return node
+    while (node.left) {
+        node = node.left
+    }
+    return node
 }
 
 // 给出两种遍历方式（必须包含中序才能确定根节点位置，以及左右子树）还原二叉树(思路：递归)
