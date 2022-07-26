@@ -424,11 +424,7 @@ function serialByPre(head) {
 /** 二叉树-反序列化(硬盘->内存) */
 function reconByPreString(preStr) {
     const values = preStr.split('_')
-    const queue = new Array()
-    for (const value of values) {
-        queue.push(value)
-    }
-    return reconPreOrder(queue)
+    return reconPreOrder(values)
 }
 function reconPreOrder(queue) {
     const value = queue.shift()
@@ -577,7 +573,7 @@ function addNode(root, nodeValue) {
 }
 
 /**
- * 二叉树中查询值是否存在
+ * 搜索二叉树中查询值是否存在
  * @param {*} root 根节点（树结构）
  * @param {*} target 目标节点值
  */
@@ -764,57 +760,4 @@ function changeTreeToBalance(root) {
         newRoot = changeTreeToBalance(newRoot)
         return newRoot
     }
-}
-
-/** 图结构 */
-function Node(value) {
-    this.value = value
-    this.childs = []
-}
-
-var a = new Node('a')
-var b = new Node('b')
-var c = new Node('c')
-var d = new Node('d')
-var e = new Node('e')
-var f = new Node('f')
-
-a.childs.push(b)
-a.childs.push(c)
-a.childs.push(f)
-b.childs.push(d)
-b.childs.push(e)
-
-/**
- * 树的深搜
- * @param {*} root 
- * @returns 
- */
-function deepSearchTree(root, target) {
-    if (!root) return
-    if (root.value === target) return true
-    var result = false
-    for (var i = 0; i < root.childs.length; i++) {
-        // 存在childs就继续递归遍历且存在result就为true（或等于）
-        result |= deepSearchTree(root.childs[i], target)
-    }
-    return result
-}
-/**
- * 树的广搜
- * @param {*} rootList 
- * @param {*} target 
- * @returns 
- */
-function widthSearchTree(rootList, target) {
-    if (!rootList || rootList.length === 0) return false
-    var childList = []
-    for (var i = 0; i < rootList.length; i++) {
-        if (rootList[i].value === target) {
-            return true
-        } else {
-            childList = childList.concat(rootList[i].childs)
-        }
-    }
-    return widthSearchTree(childList, target)
 }
