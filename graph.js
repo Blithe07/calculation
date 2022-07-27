@@ -102,3 +102,90 @@ function sortedTopology(graph) {
     }
     return result
 }
+
+/** 并查集结构 */
+class UnionFind {
+    // <Node,Array<Node>>
+    setMap = new Map()
+    // 填充map(初始化，每个节点中对应的只有自己集合)
+    MySets(nodes) {
+        for (const node of nodes) {
+            const set = new Array()
+            set.push(node)
+            this.setMap.set(node, set)
+        }
+    }
+    // 是否为同一集合
+    isSameSet(from, to) {
+        const fromSet = this.setMap.get(from)
+        const toSet = this.setMap.get(to)
+        // 通过引用判断
+        return fromSet === toSet
+    }
+    // 合并集合
+    union(from, to) {
+        const toSet = this.setMap.get(to)
+        const fromSet = this.setMap.get(from)
+        // 将toSet的点集合放到fromSet中，并且重新设置toNode指向的集合
+        for (const toNode of toSet) {
+            fromSet.push(toNode)
+            this.setMap.set(toNode, fromSet)
+        }
+    }
+}
+/** 克鲁斯卡尔算法(要求无向图，以边作为出发点) */
+function kruskal(graph) {
+    // 初始化结构
+    const unionFind = new UnionFind()
+    unionFind.MySets(graph.nodes)
+    // 通过比较器(边权重为比较值)得到从小到大的边数组
+    const arr = new Array()
+    for (const edge of graph.edges) {
+        arr.push(edge)
+    }
+    arr = arr.sort((a, b) => a.weight - b.weight)
+    const result = new Set()
+    while (arr.length) {
+        const edge = arr.shift()
+        // 不是同一个集合，合并并添加到结果数组中
+        if (!unionFind.isSameSet(edge.from, edge.to)) {
+            result.add(edge)
+            unionFind.union(edge.from, edge.to)
+        }
+    }
+    return result
+}
+/** 普利姆算法(要求无向图，以点作为出发点) */
+function prime(graph) {
+    // 通过比较器(边权重为比较值)得到从小到大的边数组
+    const arr = new Array()
+    const set = new Set()
+    const result = new Set()
+    // 处理森林问题，存在点集和边集不连通。(如果是连通图，则不需要该for循环)
+    for (const node of graph.nodes.values()) {
+        if (!set.has(node)) {
+            // 随便加个点
+            set.add(node)
+            // 该点所有边放到优先级队列中
+            for (const edge of node.edges) {
+                arr.push(edge)
+            }
+            arr = arr.sort((a, b) => a.weight - b.weight)
+            while (arr.length) {
+                const edge = arr.shift()
+                const toNode = edge.to
+                // 如果新的点不在set中，加入到set中并解锁其它边
+                if (!set.has(toNode)) {
+                    set.add(toNode)
+                    result.add(edge)
+                    for (const nextEdge of toNode.edges) {
+                        arr.push(nextEdge)
+                    }
+                    arr = arr.sort((a, b) => a.weight - b.weight)
+                }
+            }
+        }
+    }
+    // 最小生成树的边
+    return result
+}
