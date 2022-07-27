@@ -155,6 +155,7 @@ function kruskal(graph) {
     }
     return result
 }
+
 /** 普利姆算法(要求无向图，以点作为出发点) */
 function prime(graph) {
     // 通过比较器(边权重为比较值)得到从小到大的边数组
@@ -188,4 +189,50 @@ function prime(graph) {
     }
     // 最小生成树的边
     return result
+}
+
+/** 迪克斯特拉算法(单源最短路径算法，没有权值为负数的边) */
+function dijkstra(head) {
+    // 代表head出发到所有点的最小距离
+    // key:head出发指向的node
+    // value:head出发到node最小距离
+    // 如果没有对应node记录，代表从head到该node距离为正无穷
+    const distanceMap = new Map()
+    distanceMap.set(head, 0)
+    // 用于记录已经求过距离的节点，后续不处理
+    const selectedNodes = new Set()
+    // 找到map中最小距离的记录，并且不存在set中
+    const minNode = getMinDistanceAndUnSelectedNode(distanceMap, selectedNodes)
+    // 第一次选中的是头节点
+    while (minNode) {
+        const distance = distanceMap.get(minNode)
+        for (const edge of minNode.edges) {
+            const toNode = edge.to
+            // 没记录，新增记录
+            if (!distanceMap.has(toNode)) {
+                // 当前最小节点距离 + 边的权重
+                distanceMap.set(toNode, distance + edge.weight)
+            }
+            // 更新节点路径
+            distanceMap.set(toNode, Math.min(distanceMap.get(toNode), distance + edge.weight))
+        }
+        // 将当前最小节点设为选中
+        selectedNodes.add(minNode)
+        // 再找map中最小距离的记录，并且不存在set中
+        minNode = getMinDistanceAndUnSelectedNode(distanceMap, selectedNodes)
+    }
+    return distanceMap
+}
+/** 返回最小距离并未选中的节点 */
+function getMinDistanceAndUnSelectedNode(distanceMap, selectedNodes) {
+    let minNode
+    let minDistance = Number.MAX_VALUE
+    for (const [node, distance] of distanceMap.entries()) {
+        // 未选中过并距离小于minDistance
+        if (!selectedNodes.has(node) && minDistance > distance) {
+            minNode = node
+            minDistance = distance
+        }
+    }
+    return minNode
 }
