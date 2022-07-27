@@ -51,7 +51,9 @@ function bfs(node) {
 /** 深度优先遍历 */
 function dfs(node) {
     if (!node) return
+    // 定义栈结构，用于深度遍历
     const stack = []
+    // 定义set，保证数据只进一次
     const set = new Set()
     stack.push(node)
     set.add(node)
@@ -59,6 +61,7 @@ function dfs(node) {
     while (stack.length) {
         let cur = stack.pop()
         for (const next of cur.nexts) {
+            // 不存在set中，加入到set，并将原先值和现在值压入栈中，跳过其它邻居节点。
             if (!set.has(next)) {
                 set.add(next)
                 stack.push(cur)
@@ -68,4 +71,34 @@ function dfs(node) {
             }
         }
     }
+}
+
+/** 拓扑排序 */
+function sortedTopology(graph) {
+    // 存放所有入度节点
+    const inMap = new Map()
+    // 存放入度为0的节点
+    const zeroQueue = new Array()
+    // 遍历图的点结构，将入度为0的节点加入到队列
+    for (const node of graph.nodes.values()) {
+        inMap.set(node, node.in)
+        if (node.in === 0) {
+            zeroQueue.push(node)
+        }
+    }
+    const result = new Array()
+    while (zeroQueue.length) {
+        const cur = zeroQueue.shift()
+        result.add(cur)
+        // 遍历当前节点的邻居节点
+        for (const next of cur.nexts) {
+            // 邻居节点入度减一
+            inMap.set(next, inMap.get(next) - 1)
+            // 入度为0的节点加入队列
+            if (inMap.get(next) === 0) {
+                zeroQueue.push(next)
+            }
+        }
+    }
+    return result
 }
