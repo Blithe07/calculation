@@ -19,3 +19,25 @@ function func(i, start, end, other) {
         func(i - 1, other, end, start)
     }
 }
+
+/** 打印字符串全部子序列，包括空字符串 */
+// 思路：遇到一个字符，存在要与不要两个选择
+// eg: abc => abc,ab,ac,a,bc,b,c,null
+function printAllSubsequences(str) {
+    const arr = str.split('')
+    process(arr, 0)
+}
+function process(arr, i) {
+    if (i === arr.length) {
+        console.log(arr.filter(item => item !== 0).toString())
+        return
+    }
+    // 要的情况
+    process(arr, i + 1)
+    const tmp = arr[i]
+    arr[i] = 0
+    // 不要的情况
+    process(arr, i + 1)
+    // 恢复数据
+    arr[i] = tmp
+}
