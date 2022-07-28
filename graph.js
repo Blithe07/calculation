@@ -236,3 +236,109 @@ function getMinDistanceAndUnSelectedNode(distanceMap, selectedNodes) {
     }
     return minNode
 }
+/** 优化版迪克斯特拉算法(使用最小堆) */
+function dijkstra(size) {
+    const nodeHeap = new NodeHeap(size)
+    nodeHeap.addOrUpdateOrIgnore(head, 0)
+    const result = new Map()
+    while (!nodeHeap.isEmpty()) {
+        const record = nodeHeap.pop()
+        const cur = record.node
+        const distance = record.distance
+        for (const edge of cur.edges) {
+            nodeHeap.addOrUpdateOrIgnore(edge.toNode, edge.weight + distance)
+        }
+        result.set(cur, distance)
+    }
+    return result
+}
+/** 加工后的小根堆 */
+class NodeHeap {
+
+    // 距离map
+    distanceMap = new Map()
+    // 索引map，查询在nodes中的位置
+    heapIndexMap = new Map()
+
+    constructor(size) {
+        // 存放所有节点
+        this.nodes = new Array(size)
+        // 堆上节点数量
+        this.size = size
+    }
+    // 加入一个节点，根据节点信息调整堆
+    addOrUpdateOrIgnore(node, distance) {
+        // update
+        if (this.inHeap(node)) {
+            this.distanceMap.set(node, Math.min(this.distanceMap.get(node), distance))
+            this.insertHeapify(node, this.heapIndexMap.get(node))
+        }
+        // add
+        if (!this.isEntered(node)) {
+            this.nodes[this.size] = node
+            this.heapIndexMap.set(node, this.size)
+            this.distanceMap.set(node, distance)
+            this.insertHeapify(node, this.size++)
+        }
+        // ignore，不需要处理
+    }
+    // 弹出一个数，并调整堆结构
+    pop() {
+        const nodeRecord = new NodeRecord(this.nodes[0], this.getDistance(0))
+        this.swap(0, this.size - 1)
+        this.heapIndexMap.set(this.nodes[this.size - 1], -1)
+        this.distanceMap.delete(this.nodes[this.size - 1])
+        this.nodes.splice(this.size - 1, 1)
+        this.heapify(0, --this.size)
+        return nodeRecord
+    }
+    // 向上堆处理
+    insertHeapify(node, index) {
+        while (this.getDistance(index) < this.getDistance(this.nodes[(index - 1) / 2])) {
+            this.swap(index, (index - 1) * 2)
+            index = (index - 1) * 2
+        }
+    }
+    // 向下堆处理
+    heapify(index, size) {
+        let left = index * 2 - 1
+        while (left < size) {
+            let smallest = left + 1 < size && this.getDistance(left + 1) < this.getDistance(left) ? left + 1 : left
+            smallest = this.getDistance(smallest) < this.getDistance(index) ? smallest : index
+            if (smallest === index) break
+            this.swap(smallest, index)
+            index = smallest
+            left = index * 2 - 1
+        }
+    }
+    // node在不在堆中
+    inHeap(node) {
+        return this.isEntered(node) && this.heapIndexMap.get(node) !== -1
+    }
+    // node是否进过堆
+    isEntered(node) {
+        this.heapIndexMap.has(node)
+    }
+    // 堆是否为空
+    isEmpty() {
+        return this.size === 0
+    }
+    // 交换位置
+    swap(i1, i2) {
+        this.heapIndexMap.set(this.nodes[i1], i2)
+        this.heapIndexMap.set(this.nodes[i2], i1)
+        const tmp = this.nodes[i1]
+        this.nodes[i1] = this.nodes[i2]
+        this.nodes[i2] = tmp
+    }
+    getDistance(index) {
+        return this.distanceMap.get(this.nodes[index])
+    }
+}
+/** 返回节点数据 */
+class NodeRecord {
+    constructor(node, distance) {
+        this.node = node
+        this.distance = distance
+    }
+}
