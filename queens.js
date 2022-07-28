@@ -70,8 +70,9 @@ function setQueenByBit(limit, colLim, leftDiaLim, rightDiaLim) {
     let pos = limit & (~(colLim | leftDiaLim | rightDiaLim))
     let mostRightOne = 0
     while (pos !== 0) {
-        // 依次提取出候选皇后最右侧的1，尝试放置皇后
+        // 获取最右侧的1
         mostRightOne = pos & (~pos + 1)
+        // 该位置标0，代表尝试在该位置放皇后
         pos = pos - mostRightOne
         res += setQueenByBit(limit, colLim | mostRightOne, (leftDiaLim | mostRightOne) << 1, (rightDiaLim | mostRightOne) >> 1)
     }
