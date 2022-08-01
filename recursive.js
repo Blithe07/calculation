@@ -81,3 +81,28 @@ function swap(arr, i, j) {
     arr[j] = tmp
 }
 
+/** 纸牌获胜者分数问题 */
+// 规则：给定整型数组，玩家A和B每次只能从左侧或者右侧拿一张牌，两人都绝顶聪明，返回最后获胜者分数
+function winner(arr) {
+    if (!arr || arr.length === 0) return 0
+    return Math.max(f(arr, 0, arr.length - 1), s(arr, 0, arr.length - 1))
+}
+/** 先手 */
+function f(arr, L, R) {
+    // 只剩最后一张，先手的话，可以得到该分数
+    if (L === R) {
+        return arr[L]
+    }
+    // 绝顶聪明的情况下，先手拿到的肯定是最大值
+    return Math.max(arr[L] + s(L + 1, R), arr[R] + s(arr, L, R - 1))
+}
+/** 后手 */
+function s(arr, L, R) {
+    // 只剩最后一张，后手的话，得不到该分数
+    if (L === R) {
+        return 0
+    }
+    // 绝顶聪明的情况下，后手拿到的肯定是最小值
+    return Math.min(f(L + 1, R), f(arr, L, R - 1))
+}
+
