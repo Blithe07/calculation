@@ -106,3 +106,23 @@ function s(arr, L, R) {
     return Math.min(f(L + 1, R), f(arr, L, R - 1))
 }
 
+/** 逆序栈 */
+function reverseStack(stack) {
+    if (!stack || stack.length === 0) return
+    // 得到栈顶元素
+    const result = getStackBottomValue(stack)
+    reverseStack(stack)
+    // eg: [1,2,3]=>[3,2,1]
+    stack.push(result)
+}
+/** 获取栈底元素并返回 */
+function getStackBottomValue(stack) {
+    const result = stack.pop()
+    if (stack.length === 0) {
+        return result
+    } else {
+        const last = getStackBottomValue(stack)
+        stack.push(result)
+        return last
+    }
+}
