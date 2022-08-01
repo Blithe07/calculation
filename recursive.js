@@ -161,3 +161,17 @@ function numChangeChar(str, i) {
     // 3，4，5，6，7，8，9只能作为独立转换，后续继续转换
     return numChangeChar(str, i + i)
 }
+
+/** 最多价值问题 */
+// 规则：给定两个长度为N的数组weights(重量)和values(价值)，一个正数bag(载重)，所装物品不能超过bag，返回最多的价值
+function biggest(weights, values, i, bag, alreadyWeight) {
+    // 选到没得选了，返回0
+    if (i === weights.length) return 0
+    // 超重，返回0
+    if (alreadyWeight > bag) return 0
+    // 返回要当前重量或者不要当前重量情况下最大值
+    return Math.max(
+        biggest(weights, values, i + 1, alreadyWeight, bag),
+        values[i] + biggest(weights, values, i + 1, alreadyWeight + weights[i], bag)
+    )
+}
