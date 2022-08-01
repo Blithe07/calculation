@@ -342,3 +342,43 @@ class NodeRecord {
         this.distance = distance
     }
 }
+
+/** 岛问题 */
+// 规则：一个矩阵只有0，1，每个位置可以和自己上下左右四个位置相连，一片1连在一起为一个岛，求一个矩阵中有多少个岛
+function infect(arr) {
+    // 矩阵不存在返回0
+    if (!arr || !arr[0]) return 0
+    // 行数
+    const N = arr.length
+    // 列数
+    const M = arr[0].length
+    // 岛数
+    let res = 0
+    for (let i = 0; i < N; i++) {
+        for (let j = 0; j < M; j++) {
+            if (arr[i][j] === 1) {
+                res++
+                infect(arr, i, j, N, M)
+            }
+        }
+    }
+    return res
+}
+/**
+ * 将为1的四周包括自身为2
+ * @param {*} arr 矩阵
+ * @param {*} i 当前行索引
+ * @param {*} j 当前列索引
+ * @param {*} N 行数
+ * @param {*} M 列数
+ */
+function infect(arr, i, j, N, M) {
+    // 边界判断
+    if (i < 0 || i >= N || j < 0 || j >= M || arr[i][j] !== 1) return
+    // 没越界，将自身和周边变为2
+    arr[i][j] = 2
+    infect(arr, i + 1, j, N, M)
+    infect(arr, i - 1, j, N, M)
+    infect(arr, i, j + 1, N, M)
+    infect(arr, i, j - 1, N, M)
+}
