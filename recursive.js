@@ -126,3 +126,38 @@ function getStackBottomValue(stack) {
         return last
     }
 }
+
+/** 数字转换结果问题 */
+// 规则：规定1对应A，2对应B，3对应C；数字字符串111，可转换成AAA、KA、AK；给定只有数字字符串数组，返回有多少种转换结果
+function numChangeChar(str, i) {
+    // i-1之前已经做了决定，此时如果i为0，无法进行转换，返回0
+    if (str[i] === '0') {
+        return 0
+    }
+    // 当前索引已经到达了数组长度，代表前面已经确认能转换为合法的格式，记为一种结果
+    if (i === str.length) {
+        return 1
+    }
+    // 两种情况
+    if (str[i] === '1') {
+        // 1.i作为独立转换，变成A，后续继续转换
+        let res = numChangeChar(str, i + 1)
+        if (i + 1 < str.length) {
+            // 2.i可以和i+1作为一个整体，可转换为K,L,M,N,O,P,Q,R,S，后续继续转换
+            res += numChangeChar(str, i + 2)
+        }
+        return res
+    }
+    // 两种情况
+    if (str[i] === '2') {
+        // 1.2作为独立转换，变成B，后续继续转换
+        let res = numChangeChar(str, i + 1)
+        if (i + 1 < str.length && str[i + 1] >= '0' && str[i + 1] <= '6') {
+            // 2.i可以和i+1作为一个整体，只可转换为T,U,V,W,X,Y,Z，后续继续转换
+            res += numChangeChar(str, i + 2)
+        }
+        return res
+    }
+    // 3，4，5，6，7，8，9只能作为独立转换，后续继续转换
+    return numChangeChar(str, i + i)
+}
