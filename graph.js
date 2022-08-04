@@ -108,7 +108,7 @@ class UnionFind {
     // <Node,Array<Node>>
     setMap = new Map()
     // 填充map(初始化，每个节点中对应的只有自己集合)
-    MySets(nodes) {
+    mySets(nodes) {
         for (const node of nodes) {
             const set = new Array()
             set.push(node)
@@ -137,7 +137,7 @@ class UnionFind {
 function kruskal(graph) {
     // 初始化结构
     const unionFind = new UnionFind()
-    unionFind.MySets(graph.nodes)
+    unionFind.mySets(graph.nodes)
     // 通过比较器(边权重为比较值)得到从小到大的边数组
     const arr = new Array()
     for (const edge of graph.edges) {
