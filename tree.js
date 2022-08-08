@@ -96,6 +96,109 @@ function posOrderUnRecur(head) {
     }
 }
 
+/** morris遍历，利用空闲指针达到时间复杂度O(N)，空间复杂度O(1) */
+function morris(head) {
+    if (!head) return
+    let cur = head, mostRight
+    while (cur) {
+        mostRight = cur.left
+        if (mostRight) {
+            // 对标/assets/morris.png中的情况2 
+            while (mostRight.right && mostRight.right !== cur) {
+                mostRight = mostRight.right
+            }
+            if (!mostRight.right) {
+                // 对标/assets/morris.png中的情况2.a
+                mostRight.right = cur
+                cur = cur.left
+                continue
+            } else {
+                // 对标/assets/morris.png中的情况2.b
+                mostRight.right = null
+            }
+        }
+        // 对标/assets/morris.png中的情况1
+        cur = cur.right
+    }
+    // 对标/assets/morris.png中的情况3
+}
+/** morris实现先序遍历 */
+// 1.只会遇到一次的节点，直接打印
+// 2.能遇到两次的节点，打印第一次
+function morrisPre(head) {
+    if (!head) return
+    let cur = head, mostRight
+    while (cur) {
+        mostRight = cur.left
+        if (mostRight) {
+            while (mostRight.right && mostRight.right !== cur) {
+                mostRight = mostRight.right
+            }
+            if (!mostRight.right) {
+                // 对应2.
+                console.log(cur.value);
+                mostRight.right = cur
+                cur = cur.left
+                continue
+            } else {
+                mostRight = null
+            }
+        } else {
+            // 无左树，对应1.
+            console.log(cur.value);
+        }
+        cur = cur.right
+    }
+}
+/** morris实现中序遍历 */
+// 1.只会遇到一次的节点，直接打印
+// 2.能遇到两次的节点，打印第二次
+function morrisIn(head) {
+    if (!head) return
+    let cur = head, mostRight
+    while (cur) {
+        mostRight = cur.left
+        if (mostRight) {
+            while (mostRight.right && mostRight.right !== cur) {
+                mostRight = mostRight.right
+            }
+            if (!mostRight.right) {
+                mostRight.right = cur
+                cur = cur.left
+                continue
+            } else {
+                mostRight = null
+            }
+        }
+        // 没有左树或者第二次遇到同一节点(对应1、2)
+        console.log(cur.value);
+        cur = cur.right
+    }
+}
+/** morris实现后序遍历 */
+// 1.能遇到两次的节点，第二次遇到时，打印其节点左子树逆序右边界
+// 2.单独逆序打印整棵树右边界
+// 逆序打印(通过链表逆序完成，从而达到时间复杂度O(1))
+function printEdge(node) {
+    const tail = reverseEdge(node)
+    let cur = tail
+    while (cur) {
+        console.log(cur.value);
+        cur = cur.right
+    }
+    reverseEdge(tail)
+}
+function reverseEdge(from) {
+    let next, prev
+    while (from) {
+        next = from.right
+        from.right = prev
+        prev = from
+        from = next
+    }
+    return prev
+}
+
 /** 获取树的宽度(使用map) */
 function getTreeWidth(head) {
     if (!head) return 0
