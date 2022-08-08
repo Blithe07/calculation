@@ -761,3 +761,89 @@ function changeTreeToBalance(root) {
         return newRoot
     }
 }
+
+/** 树形DP问题 */
+
+// 二叉树节点间最大距离
+/**
+ * 最大距离
+ *  1.头节点不参与
+ *      a.左树的最大距离
+ *      b.右树的最大距离
+ *  2.头节点参与
+ *      a.左树离头节点最远的距离(左树高度)+右树离头节点最远的距离(右树高度)+1
+ */
+function maxDistance(head) {
+    return maxTreeDistanceInfo(head).maxDistance
+}
+class ReturnMaxDistanceInfo {
+    constructor(maxDistance, height) {
+        this.maxDistance = maxDistance
+        this.height = height
+    }
+}
+function maxTreeDistanceInfo(node) {
+    // base case
+    if (!node) {
+        return new ReturnMaxDistanceInfo(0, 0)
+    }
+    const leftData = maxTreeDistanceInfo(node.left)
+    const rightData = maxTreeDistanceInfo(node.right)
+    // 三种情况
+    const p1 = leftData.maxDistance
+    const p2 = rightData.maxDistance
+    const p3 = rightData.height + rightData.height + 1
+    // 组合出最大距离
+    const maxDistance = Math.max(p1, p2, p3)
+    // 组合出树的高度
+    const height = Math.max(rightData.height, leftData.height) + 1
+    return new ReturnMaxDistanceInfo(maxDistance, height)
+}
+
+// 派对最大快乐值问题(某个员工来，直接下级不能来)
+/**
+ * 1.当前员工参加
+ *  a.直接下级不参加
+ * 2.当前员工不参加
+ *  a.直接下级参加，
+ *  b.直接下级不参加
+ */
+class Employee {
+    // 快乐值
+    happy = 0
+    // 直接下级
+    subordinates = []
+    constructor(happy, subordinates) {
+        this.happy = happy
+        this.subordinates = subordinates
+    }
+}
+function maxHappy(head) {
+    const headInfo = maxHappyInfo(head)
+    return Math.max(headInfo.laiMaxHappy, headInfo.buMaxHappy)
+}
+class ReturnHappyInfo {
+    constructor(laiMaxHappy, buMaxHappy) {
+        this.laiMaxHappy = laiMaxHappy
+        this.buMaxHappy = buMaxHappy
+    }
+}
+/**
+ * @param {Employee} node 多叉节点
+ */
+function maxHappyInfo(node) {
+    // base case
+    if (!node.subordinates.length) {
+        return new ReturnHappyInfo(node.happy, 0)
+    }
+    const lai = node.happy
+    const bu = 0
+    for (const subordinate of node.subordinates) {
+        const nextInfo = maxHappyInfo(subordinate)
+        // 1.a
+        lai += nextInfo.buMaxHappy
+        // 2.a和2.b取最大值
+        bu += Math.max(nextInfo.laiMaxHappy, nextInfo.buMaxHappy)
+    }
+    return new ReturnHappyInfo(lai, bu)
+}
