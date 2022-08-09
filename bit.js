@@ -66,7 +66,25 @@ function add(a, b) {
 }
 
 /** 通过位运算实现减法 */
-function sub(a, b) {
+function minus(a, b) {
     // a + b的相反数，即可实现减法
     return add(a, add(~b + 1))
 }
+
+/** 通过位运算实现乘法 */
+function multi(a, b) {
+    let res = 0
+    // 整个流程和数学乘法类似
+    while (b !== 0) {
+        if ((b & 1) !== 0) {
+            // 如果b最右侧为1才会添加上结果
+            res = add(res, a)
+        }
+        // a向左移
+        a <<= 1
+        // b无符号右移右移(补0)
+        b >>>= 1
+    }
+    return res
+}
+/** 通过位运算实现除法 */
