@@ -38,3 +38,15 @@ function getMax(a, b) {
     const returnB = flip(returnA)
     return a * returnA + b * returnB
 }
+
+/** 判断某数是否为2的幂次方 */
+function is2Power(n) {
+    // 如果是2的幂次方，通过位来表示该数时只有一个1
+    return (n & (n - 1)) === 0
+}
+
+/** 判断某数是否为4的幂次方 */
+function is4Power(n) {
+    // 首先得是2的幂次方，接着跟01...0101做与运算，能排除掉 2，8，32等是2的幂次方但不是4的幂次方的数
+    return is2Power(n) && (n & 0x55555555) !== 0
+}
