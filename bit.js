@@ -87,4 +87,29 @@ function multi(a, b) {
     }
     return res
 }
+
 /** 通过位运算实现除法 */
+function div(a, b) {
+    let x = isNeg(a) ? (~a + 1) : a
+    let y = isNeg(b) ? (~b + 1) : b
+    let res = 0
+    /**
+     * eg: a=0110111 b=0000011
+     * x右移4位 x=0000011 y=0000011 res=0010000 x'=0000111
+     * x右移1位 x=0000011 b=0000011 res=0010010 x'=0000011
+     */
+    for (let i = 31; i > -1; i = minus(i, 1)) {
+        // 右移肯定不会溢出
+        if ((x >> i) >= y) {
+            /// 能被除，记录结果
+            res |= (1 << i)
+            // 通过除数左移指定位，减去已经除过的数值，得到更小的被除数，直到被除数小于除数
+            x = minus(x, y << i)
+        }
+    }
+    return isNeg(a) ^ isNeg(b) ? (~res + 1) : res
+}
+/** 判断数字是否为负数 */
+function isNeg(n) {
+    return n < 0
+}
