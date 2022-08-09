@@ -50,3 +50,23 @@ function is4Power(n) {
     // 首先得是2的幂次方，接着跟01...0101做与运算，能排除掉 2，8，32等是2的幂次方但不是4的幂次方的数
     return is2Power(n) && (n & 0x55555555) !== 0
 }
+
+/** 通过位运算实现加法 */
+function add(a, b) {
+    let sum = a
+    // 当b不为零重复执行，就能得到最终结果
+    // a ^ b = 无进制加法
+    // (a & b) << 1 = 进位信息
+    while (b !== 0) {
+        sum = a ^ b
+        b = (a & b) << 1
+        a = sum
+    }
+    return sum
+}
+
+/** 通过位运算实现减法 */
+function sub(a, b) {
+    // a + b的相反数，即可实现减法
+    return add(a, add(~b + 1))
+}
