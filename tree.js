@@ -179,6 +179,28 @@ function morrisIn(head) {
 // 1.能遇到两次的节点，第二次遇到时，打印其节点左子树逆序右边界
 // 2.单独逆序打印整棵树右边界
 // 逆序打印(通过链表逆序完成，从而达到时间复杂度O(1))
+function morrisPos(head) {
+    if (!head) return
+    let cur = head, mostRight
+    while (cur) {
+        mostRight = cur.left
+        if (mostRight) {
+            while (mostRight.right && mostRight.right !== cur) {
+                mostRight = mostRight.right
+            }
+            if (!mostRight) {
+                mostRight.right = cur
+                cur = cur.left
+                continue
+            } else {
+                mostRight.right = null
+                printEdge(cur.left)
+            }
+        }
+        cur = cur.right
+    }
+    printEdge(head)
+}
 function printEdge(node) {
     const tail = reverseEdge(node)
     let cur = tail
