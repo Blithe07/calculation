@@ -99,3 +99,68 @@ function min1(arr, index, rest) {
         return Math.min(p1, p2 + 1)
     }
 }
+// 缓存方式
+function minCoins2(arr, rest) {
+    const dp = Array.from(new Array(arr.length + 1), () => new Array(rest + 1).fill(-2))
+    return min2(arr, 0, rest, dp)
+}
+function min2(arr, index, rest, dp) {
+    if (rest < 0) {
+        return -1
+    }
+    if (dp[index][rest] !== -2) {
+        return dp[index][rest]
+    }
+    if (rest === 0) {
+        dp[index][rest] = 0
+    } else if (rest === arr.length) {
+        dp[index][rest] = -1
+    } else {
+        const p1 = min2(arr, index + 1, rest, dp)
+        const p2 = min2(arr, index + 1, rest - arr[index], dp)
+        if (p1 === -1 && p2 === -1) {
+            dp[index][rest] = -1
+        } else {
+            if (p1 === -1) {
+                dp[index][rest] = p2 + 1
+            }
+            else if (p2 === -1) {
+                dp[index][rest] = p1
+            } else {
+                dp[index][rest] = Math.min(p1, p2 + 1)
+            }
+        }
+    }
+    return dp[index][rest]
+}
+// 动态规划
+function minCoins3(arr, rest) {
+    const dp = Array.from(new Array(arr.length + 1), () => new Array(rest + 1))
+    for (let i = 0; i <= arr.length; i++) {
+        dp[i][0] = 0
+    }
+    for (let j = 1; j <= rest; j++) {
+        dp[arr.length][j] = -1
+    }
+    for (let i = arr.length - 1; i >= 0; i--) {
+        for (let j = 1; j <= rest; j++) {
+            const p1 = dp[i + 1][j]
+            let p2 = -1
+            if (j - arr[i] > -1) {
+                p2 = dp[i + 1][rest - arr[i]]
+            }
+            if (p1 === -1 && p2 === -1) {
+                dp[i][j] = -1
+            } else {
+                if (p1 === -1) {
+                    dp[i][j] = p2 + 1
+                } else if (p2 === -1) {
+                    dp[i][j] = p1
+                } else {
+                    dp[i][j] = Math.min(p1, p2 + 1)
+                }
+            }
+        }
+    }
+    return dp[0][rest]
+}
