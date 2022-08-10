@@ -113,7 +113,7 @@ function min2(arr, index, rest, dp) {
     }
     if (rest === 0) {
         dp[index][rest] = 0
-    } else if (rest === arr.length) {
+    } else if (index === arr.length) {
         dp[index][rest] = -1
     } else {
         const p1 = min2(arr, index + 1, rest, dp)
@@ -142,12 +142,13 @@ function minCoins3(arr, rest) {
     for (let j = 1; j <= rest; j++) {
         dp[arr.length][j] = -1
     }
+
     for (let i = arr.length - 1; i >= 0; i--) {
         for (let j = 1; j <= rest; j++) {
             const p1 = dp[i + 1][j]
             let p2 = -1
-            if (j - arr[i] > -1) {
-                p2 = dp[i + 1][rest - arr[i]]
+            if (j - arr[i] >= 0) {
+                p2 = dp[i + 1][j - arr[i]]
             }
             if (p1 === -1 && p2 === -1) {
                 dp[i][j] = -1
