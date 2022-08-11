@@ -1,6 +1,11 @@
 /** 动态规划问题 */
 // 切入点：从想要的结果开始考虑，有点类似逆序递归
 // 核心元素：最优子结构，边界，状态转移方程式
+// 步骤：
+//  1.确定可变参数数量，并建立对应维度表格
+//  2.标出计算终止位置
+//  3.根据base case填充边界数据
+//  4.根据依赖关系推导其它位置
 
 /** 机器人行走问题 */
 // 规则：在长度为1~N固定位置中，每次只能走一步，从开始位置S到结束位置E走K布一共有多少走法
@@ -164,4 +169,56 @@ function minCoins3(arr, rest) {
         }
     }
     return dp[0][rest]
+}
+
+/** 纸牌获胜者分数问题 */
+// 规则：给定整型数组，玩家A和B每次只能从左侧或者右侧拿一张牌，两人都绝顶聪明，返回最后获胜者分数
+function winner1(arr) {
+    if (!arr || arr.length === 0) return 0
+    return Math.max(f(arr, 0, arr.length - 1), s(arr, 0, arr.length - 1))
+}
+/** 先手 */
+function f(arr, L, R) {
+    // 只剩最后一张，先手的话，可以得到该分数
+    if (L === R) {
+        return arr[L]
+    }
+    // 绝顶聪明的情况下，先手拿到的肯定是最大值
+    return Math.max(arr[L] + s(arr, L + 1, R), arr[R] + s(arr, L, R - 1))
+}
+/** 后手 */
+function s(arr, L, R) {
+    // 只剩最后一张，后手的话，得不到该分数
+    if (L === R) {
+        return 0
+    }
+    // 绝顶聪明的情况下，后手拿到的肯定是最小值
+    return Math.min(f(arr, L + 1, R), f(arr, L, R - 1))
+}
+// 动态规划
+function winner2(arr) {
+    const f = Array.from(new Array(arr.length), () => new Array(arr.length))
+    const s = Array.from(new Array(arr.length), () => new Array(arr.length))
+    // 对角线填充值(先手能得到数组该索引上的数值，后手为0)
+    for (let i = 0; i < arr.length; i++) {
+        f[i][i] = arr[i]
+    }
+    for (let i = 0; i < arr.length; i++) {
+        s[i][i] = 0
+    }
+    // 依赖关系：当前值由另一张表的当前值位置的左侧和下侧决定
+    let row = 0
+    let col = 1
+    while (col < arr.length) {
+        let i = row
+        let j = col
+        while (i < arr.length && j < arr.length) {
+            f[i][j] = Math.max(arr[i] + s[i + 1][j], arr[j] + s[i][j - 1])
+            s[i][j] = Math.min(f[i + 1][j], f[i][j - 1])
+            i++
+            j++
+        }
+        col++
+    }
+    return Math.max(f[0][arr.length - 1], s[0][arr.length - 1])
 }
