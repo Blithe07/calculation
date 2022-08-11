@@ -275,3 +275,59 @@ function jump2(dp, x, y, step) {
     }
     return dp[x][y][step]
 }
+
+/** 生存概率问题 */
+// 规则：N*M区域，从(row,col)出发，等概率随机四个方向走rest步后，获得生存方法数
+function liveWay1(N, M, row, col, rest) {
+    // 总的方法数
+    const all = Math.pow(4, rest)
+    // 生存方法数
+    const live = live1(N, M, row, col, rest)
+    return live / all
+}
+function live1(N, M, row, col, rest) {
+    if (row < 0 || col < 0 || row === N || col === M) {
+        return 0
+    }
+    if (rest === 0) {
+        return 1
+    }
+    return live1(N, M, row + 1, col, rest - 1)
+        + live1(N, M, row - 1, col, rest - 1)
+        + live1(N, M, row, col + 1, rest - 1)
+        + live1(N, M, row, col - 1, rest - 1)
+}
+// 动态规划
+function liveWay2(N, M, row, col, rest) {
+    // 总的方法数
+    const all = Math.pow(4, rest)
+    // 生存方法数
+    const live = live2(N, M, row, col, rest)
+    return live / all
+}
+function live2(N, M, row, col, rest) {
+    // 考虑点在边界上，还往四个方向走，所以+2
+    const dp = Array.from(new Array(N + 2), () => Array.from(new Array(M + 2), () => new Array(rest + 1).fill(0)))
+    for (let i = 0; i < N; i++) {
+        for (let j = 0; j < M; j++) {
+            dp[i][j][0] = 1
+        }
+    }
+    for (let k = 1; k <= rest; k++) {
+        for (let i = 0; i <= N; i++) {
+            for (let j = 0; j <= M; j++) {
+                dp[i][j][k] += getValue(dp, i + 1, j, k - 1, N, M)
+                dp[i][j][k] += getValue(dp, i - 1, j, k - 1, N, M)
+                dp[i][j][k] += getValue(dp, i, j + 1, k - 1, N, M)
+                dp[i][j][k] += getValue(dp, i, j - 1, k - 1, N, M)
+            }
+        }
+    }
+    return dp[row][col][rest]
+}
+function getValue(dp, row, col, rest, N, M) {
+    if (row < 0 || col < 0 || row === N || col === M) {
+        return 0
+    }
+    return dp[row][col][rest]
+}
