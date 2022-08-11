@@ -2,7 +2,7 @@
 // 切入点：从想要的结果开始考虑，有点类似逆序递归
 // 核心元素：最优子结构，边界，状态转移方程式
 // 步骤：
-//  1.确定可变参数数量，并建立对应维度表格
+//  1.确定可变参数数量，并建立对应维度表格(尽可能找到单可变参数维度，即整型数据，以及尽可能找到可变参数个数少的尝试)
 //  2.标出计算终止位置
 //  3.根据base case填充边界数据
 //  4.根据依赖关系推导其它位置
@@ -330,4 +330,57 @@ function getValue(dp, row, col, rest, N, M) {
         return 0
     }
     return dp[row][col][rest]
+}
+
+/** 零钱找零组合问题 */
+// 规则：arr都是正数，没有重复值，每个值代表一个面值，可以无限用该面值。最终要找零钱数rest，求找零方法
+function coinsNum1(arr, rest) {
+    return coins1(arr, 0, rest)
+}
+function coins1(arr, index, rest) {
+    if (index === arr.length) {
+        return rest === 0 ? 1 : 0
+    }
+    let ways = 0
+    for (let zhang = 0; zhang * arr[index] <= rest; zhang++) {
+        ways += coins1(arr, index + 1, rest - arr[index] * zhang)
+    }
+    return ways
+}
+// 动态规划(无优化版本，时间复杂度O(N*rest^rest))
+// 最差情况：遇到面值为1的时候，当前rest为最大值，需要计算使用面值为1达到rest值的所有张数可能性。
+// 但其实 (当前位置-1) 位置已经统计了达到 (当前位置-1) 值的所有张数可能性
+// 此题目中，只需要使用 (当前位置-1) 的数加上 (当前位置) 下方的数就可以得出结果
+function coinsNum2(arr, rest) {
+    if (!arr || arr.length) return 0
+    const dp = Array.from(new Array(arr.length + 1), () => new Array(rest + 1).fill(0))
+    dp[arr.length][0] = 1
+    for (let i = arr.length - 1; i >= 0; i--) {
+        for (let j = 1; i < rest; j++) {
+            let ways = 0
+            // 痛点
+            for (let zhang = 0; zhang * arr[i] <= rest; zhang++) {
+                ways += dp[i + 1][rest - arr[i] * zhang]
+            }
+            dp[i][j] = ways
+        }
+    }
+    return dp[0][rest]
+}
+// 动态规划(优化版本，)
+// 对于上述痛点的优化(用临近数据代替枚举行为)
+function coinsNum2(arr, rest) {
+    if (!arr || arr.length) return 0
+    const dp = Array.from(new Array(arr.length + 1), () => new Array(rest + 1).fill(0))
+    dp[arr.length][0] = 1
+    for (let i = arr.length - 1; i >= 0; i--) {
+        for (let j = 1; i < rest; j++) {
+            dp[i][j] = dp[i + 1][j]
+            // 剩余零钱数必须为正数的情况下，才能加上(当前位置-1)本行前一个的数据的值
+            if (j - arr[i] >= 0) {
+                dp[i][j] += dp[i][j - arr[i]]
+            }
+        }
+    }
+    return dp[0][rest]
 }
