@@ -222,3 +222,56 @@ function winner2(arr) {
     }
     return Math.max(f[0][arr.length - 1], s[0][arr.length - 1])
 }
+
+/** 象棋问题 */
+// 规则：9*10的棋盘上，马从0,0位置出发，到达x,y位置，跳step步，总共多少跳法
+function jumpWay1(x, y, step) {
+    return jump1(x, y, step)
+}
+function jump1(x, y, step) {
+    // 棋盘边界判断
+    if (x < 0 || y < 0 || x > 8 || y > 9) {
+        return 0
+    }
+    // base case
+    // 当前没得跳了，而且当前位置是0,0。代表有一种跳法
+    if (step === 0) {
+        return x === 0 && y === 0 ? 1 : 0
+    }
+    // 题意是从0,0跳到x,y。代码实现是从x,y跳到0,0
+    return jump1(x + 1, y + 2, step - 1)
+        + jump1(x - 1, y + 2, step - 1)
+        + jump1(x + 2, y + 1, step - 1)
+        + jump1(x - 2, y + 1, step - 1)
+        + jump1(x + 1, y - 2, step - 1)
+        + jump1(x - 1, y - 2, step - 1)
+        + jump1(x + 2, y - 1, step - 1)
+        + jump1(x - 2, y - 1, step - 1)
+}
+// 动态规划
+function jumpWay2(x, y, step) {
+    const dp = Array.from(new Array(9), () => Array.from(new Array(10), () => new Array(step + 1)))
+    dp[0][0][0] = 1
+    for (let h = 1; h <= step; h++) {
+        for (let r = 0; r < 9; r++) {
+            for (let c = 0; c < 10; c++) {
+                dp[r][c][h] += jump2(dp, r + 1, c + 2, h - 1)
+                dp[r][c][h] += jump2(dp, r - 1, c + 2, h - 1)
+                dp[r][c][h] += jump2(dp, r + 2, c + 1, h - 1)
+                dp[r][c][h] += jump2(dp, r - 2, c + 1, h - 1)
+                dp[r][c][h] += jump2(dp, r + 1, c - 2, h - 1)
+                dp[r][c][h] += jump2(dp, r - 1, c - 2, h - 1)
+                dp[r][c][h] += jump2(dp, r + 2, c - 1, h - 1)
+                dp[r][c][h] += jump2(dp, r - 2, c - 1, h - 1)
+            }
+        }
+    }
+    return dp[x][y][step]
+}
+function jump2(dp, x, y, step) {
+    // 棋盘边界判断
+    if (x < 0 || y < 0 || x > 8 || y > 9) {
+        return 0
+    }
+    return dp[x][y][step]
+}
