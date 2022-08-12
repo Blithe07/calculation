@@ -972,3 +972,77 @@ function maxHappyInfo(node) {
     }
     return new ReturnHappyInfo(lai, bu)
 }
+
+/** AVL树 */
+// 在AVL树中任何节点的两个子树的高度最大差别为1，所以它也被称为高度平衡树。增加和删除可能需要通过一次或多次树旋转来重新平衡这个树。
+// 伪代码
+function avlTree(node) {
+    while (node) {
+        const parent = node.parent
+        const leftHeight = node.left ? node.left.height : -1
+        const rightHeight = node.right ? node.right.height : -1
+        const nodeBalance = rightHeight - leftHeight
+        if (nodeBalance === 2) {
+            if (node.right.right) {
+                node = singleRotateChangeTreeToBalance(node)
+                break
+            } else {
+                node = leftRightRotateChangeTreeToBalance(node)
+                break
+            }
+        } else if (nodeBalance === -2) {
+            if (node.left.left) {
+                node = singleRotateChangeTreeToBalance(node)
+                break
+            } else {
+                node = leftRightRotateChangeTreeToBalance(node)
+                break
+            }
+        } else {
+            // 针对新增删除操作，更新高度
+            // updateHeight(node)
+        }
+        node = parent
+    }
+}
+
+/** SB树 */
+// 基于节点数量来判断是否为平衡二叉树。叔叔节点数>=任一侄子节点数，因此左右两颗子树最大节点数差值不超过N+1
+// 伪代码，将当前节点调整完毕，如果有父节点，需要向上继续调整
+function sbTree(cur) {
+    if (!cur) return null
+    // 当右子树节点数(叔叔) < 左子树的左子树节点数(左侄子)
+    if (!cur.left && !cur.left.left && !cur.right && cur.left.left.size > cur.right.size) {
+        cur = rightRotate(cur)
+        // 节点数变化的节点递归调用该行为
+        cur.r = sbTree(cur.r)
+        cur = sbTree(cur)
+    } else if (!cur.left && !cur.left.left && !cur.right && cur.left.right.size > cur.right.size) {
+        cur.left = leftRotate(cur.left)
+        cur = rightRotate(cur)
+        // 节点数变化的节点递归调用该行为
+        cur.left = sbTree(cur.left)
+        cur.right = sbTree(cur.right)
+        cur = sbTree(cur)
+    } else if (!cur.right && !cur.right.right && !cur.left && cur.right.right.size > cur.left.size) {
+        cur = leftRotate(cur)
+        // 节点数变化的节点递归调用该行为
+        cur.l = sbTree(cur.l)
+        cur = sbTree(cur)
+    } else if (!cur.left && !cur.left.left && !cur.right && cur.left.right.size > cur.right.size) {
+        cur.right = rightRotate(cur.right)
+        cur = leftRotate(cur)
+        // 节点数变化的节点递归调用该行为
+        cur.left = sbTree(cur.left)
+        cur.right = sbTree(cur.right)
+        cur = sbTree(cur)
+    }
+    return cur
+}
+
+/** 红黑树 */
+// 特征:
+//  1.节点非红即黑
+//  2.头节点和叶节点(在红黑树中叶节点为null)必须是黑色节点
+//  3.任何两个红节点不能相邻，不能是父子节点
+//  4.当前节点到叶子节点每条路黑色节点数一样，可以保证左树和右树路径长度不超过两倍以上(头：黑， 左：红，黑，红，黑  右：黑，黑)，最长的路径就是红黑交替，最短的路就是全是黑
