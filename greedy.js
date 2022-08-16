@@ -82,3 +82,24 @@ function findMaximizedCapital(k, m, profits, costs) {
     }
     return m
 }
+
+/** 苹果装袋问题 */
+// 只提供一次装6个和一次装8个的袋子，苹果数为N，返回最少袋子数，装不了则返回-1
+function minBags1(apple) {
+    if (apple < 6 || apple % 2 === 1) {
+        return -1
+    }
+    let bag6 = -1
+    let bag8 = Math.floor(apple / 8)
+    let rest = apple - 8 * bag8
+    // 优化，取6和8最小公倍数，避免后续不必要计算
+    while (rest > 0 && rest < 24) {
+        let restBag6 = rest % 6 === 0 ? rest / 6 : -1
+        if (restBag6 !== -1) {
+            bag6 = restBag6
+            break
+        }
+        rest = apple - 8 * (bag8 - 1)
+    }
+    return bag6 === -1 ? -1 : bag6 + bag8
+}
