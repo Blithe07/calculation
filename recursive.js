@@ -134,7 +134,7 @@ function numChangeChar(str, i) {
 
 /** 最多价值问题 */
 // 规则：给定两个长度为N的数组weights(重量)和values(价值)，一个正数bag(载重)，所装物品不能超过bag，返回最多的价值
-function biggest(weights, values, i, bag, alreadyWeight) {
+function biggest(weights, values, i, alreadyWeight, bag) {
     // 选到没得选了，返回0
     if (i === weights.length) return 0
     // 超重，返回0
