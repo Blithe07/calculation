@@ -60,19 +60,14 @@ function process1(arr, i, result) {
         result.push(arr.toString())
         return
     }
-    const visit = new Array(26)
     // i往后，做不同字符尝试
     for (let j = i; j < arr.length; j++) {
-        // 保证不重复
-        if (!visit[arr[j] - 'a']) {
-            visit[arr[j] - 'a'] = true
             // 交换i和j，实现多种排列情况
             swap(arr, i, j)
             // arr[i+1~arr.length-1]继续做选择排列
             process1(arr, i + 1, result)
             // 利用递归栈保存信息的特性，将数据恢复回去
             swap(arr, i, j)
-        }
     }
 }
 function swap(arr, i, j) {
