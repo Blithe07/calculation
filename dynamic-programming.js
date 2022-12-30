@@ -83,7 +83,7 @@ function minCoins1(arr, rest) {
 }
 function min1(arr, index, rest) {
     // 超出目标或者超出选择
-    if (rest < 0 || index === arr.length) {
+    if (rest < 0 || ( rest > 0 && index === arr.length)) {
         return -1
     }
     // 达到目标
