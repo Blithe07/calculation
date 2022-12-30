@@ -40,6 +40,7 @@ function walk2(N, end, rest, cur, dp) {
     }
     if (rest === 0) {
         dp[rest][cur] = cur === end ? 1 : 0
+        return dp[rest][cur]
     }
     if (cur === 1) {
         dp[rest][cur] = walk2(N, end, rest - 1, cur + 1, dp)
