@@ -103,3 +103,13 @@ function minBags1(apple) {
     }
     return bag6 === -1 ? -1 : bag6 + bag8
 }
+// 根据返回结果存在一定规律
+function minBags2(apple) {
+    if (apple % 2 === 1) {
+        return -1
+    }
+    if (apple < 18) {
+        return apple === 0 ? 0 : (apple === 6 || apple === 8) ? 1 : (apple === 12 || apple === 14 || apple === 16) ? 2 : -1
+    }
+    return (apple - 18) / 8 + 3
+}
